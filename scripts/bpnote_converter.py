@@ -11,16 +11,17 @@ import os
 import shutil
 import xlrd
 import json
+from scripts.models.bpnote import BpNote
 
 
 class BpNoteExcelToJson(object):
 
     FILE_EXT = '.csv'
-    INPUT_EXTS = (
-        '.xlsx'
-    )
+    INPUT_EXT = '.xlsx'
     OUTPUT_EXT = '.json'
     ENCODING = 'utf-8'
+    BPNOTE_EXCEL_PREFIX = 'bpnote血圧記録_'
+    OUTPUT_JSON_PREFIX = 'bp_'
 
     def __init__(self, path='', output_path=''):
         # パスとか設定
@@ -48,8 +49,19 @@ class BpNoteExcelToJson(object):
         """
         root, ext = os.path.splitext(data_file)
         # 指定拡張子以外は読まない
-        if ext in BpNoteExcelToJson.INPUT_EXTS:
-            print(data_file)
+        if ext == BpNoteExcelToJson.INPUT_EXT:
+            book = xlrd.open_workbook(os.path.join(self.path, data_file))
+            for s in book.sheets():
+                for i in range(s.nrows):
+                    # Headerは飛ばす
+                    if i == 0:
+                        continue
+                    model = BpNote()
+                    model.set_excel_row(s.row(i))
+                    print(model.row)
+
+            # print(data_file)
+            # print(self._get_output_filename(root))
         else:
             return
 
@@ -64,7 +76,17 @@ class BpNoteExcelToJson(object):
         Output File
         """
         # root名+拡張子
-        return os.path.join(self.output_path, "".join([root, self.OUTPUT_EXT]))
+        return os.path.join(
+            self.output_path, "".join(
+                [
+                    root.replace(BpNoteExcelToJson.BPNOTE_EXCEL_PREFIX, BpNoteExcelToJson.OUTPUT_JSON_PREFIX),
+                    self.OUTPUT_EXT
+                ]
+            )
+        )
+
+    def _get_row_data(self):
+        pass
 
 
 def main(args):
