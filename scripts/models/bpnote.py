@@ -3,6 +3,8 @@
 
 __author__ = 'Shinichi Nakagawa'
 
+from datetime import datetime
+
 
 class BpNote(object):
     """
@@ -21,11 +23,11 @@ class BpNote(object):
     # 計測時間(夜)
     COLUMN_EVENING_TIME = 'evening_time'
     # 収縮期血圧(夜)
-    COLUMN_EVENING_BPS = 'morning_bp_s'
+    COLUMN_EVENING_BPS = 'evening_bp_s'
     # 拡張期血圧(夜)
-    COLUMN_EVENING_BPD = 'morning_bp_d'
+    COLUMN_EVENING_BPD = 'evening_bp_d'
     # 脈拍(夜)
-    COLUMN_EVENING_HR = 'morning_hr'
+    COLUMN_EVENING_HR = 'evening_hr'
     # 体重
     COLUMN_WEIGHT = 'weight'
     # 服薬してるか否か
@@ -33,23 +35,15 @@ class BpNote(object):
     # メモ
     COLUMN_MEMO = 'memo'
 
-    # EXCEL上のCOLUMN位置
-    SHEET_COLUMNS = {
-        COLUMN_DATE: 0,
-        COLUMN_MORNING_TIME: 1,
-        COLUMN_MORNING_BPS: 2,
-        COLUMN_MORNING_BPD: 3,
-        COLUMN_MORNING_HR: 4,
-        COLUMN_EVENING_TIME: 5,
-        COLUMN_EVENING_BPS: 6,
-        COLUMN_EVENING_BPD: 7,
-        COLUMN_EVENING_HR: 8,
-        COLUMN_WEIGHT: 9,
-        COLUMN_INGESTION: 10,
-        COLUMN_MEMO: 11,
+    # 服薬フラグ
+    INGESTION_FLGS = {
+        '有': True,
+        '無': False
     }
 
-    def __init__(self):
+    def __init__(self, excel_class, datemode):
+        self.excel = excel_class
+        self.datemode = datemode
         self.row = {}
 
     def set_excel_row(self, row):
@@ -57,5 +51,17 @@ class BpNote(object):
         Excel行データから値をセット
         :param row:Excel行データ(list)
         """
-        for k, v in self.SHEET_COLUMNS.items():
-            self.row[k] = row[v].value
+        self.row = {
+            self.COLUMN_DATE: self.excel.date(row[0].value, self.datemode),
+            self.COLUMN_MORNING_TIME: self.excel.date(row[1].value, self.datemode),
+            self.COLUMN_MORNING_BPS: row[2].value,
+            self.COLUMN_MORNING_BPD: row[3].value,
+            self.COLUMN_MORNING_HR: row[4].value,
+            self.COLUMN_EVENING_TIME: self.excel.date(row[5].value, self.datemode),
+            self.COLUMN_EVENING_BPS: row[6].value,
+            self.COLUMN_EVENING_BPD: row[7].value,
+            self.COLUMN_EVENING_HR: row[8].value,
+            self.COLUMN_WEIGHT: row[9].value,
+            self.COLUMN_INGESTION: self.INGESTION_FLGS.get(row[10].value, False),
+            self.COLUMN_MEMO: row[11].value,
+        }

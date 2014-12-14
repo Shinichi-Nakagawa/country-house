@@ -9,9 +9,9 @@ __author__ = 'Shinichi Nakagawa'
 
 import os
 import shutil
-import xlrd
 import json
 from scripts.models.bpnote import BpNote
+from scripts.utils.excel import Excel
 
 
 class BpNoteExcelToJson(object):
@@ -50,18 +50,19 @@ class BpNoteExcelToJson(object):
         root, ext = os.path.splitext(data_file)
         # 指定拡張子以外は読まない
         if ext == BpNoteExcelToJson.INPUT_EXT:
-            book = xlrd.open_workbook(os.path.join(self.path, data_file))
-            for s in book.sheets():
+            book = Excel.book(os.path.join(self.path, data_file))
+            rows = []
+            for s in Excel.sheets(book):
                 for i in range(s.nrows):
                     # Headerは飛ばす
                     if i == 0:
                         continue
-                    model = BpNote()
+                    model = BpNote(Excel, book.datemode)
                     model.set_excel_row(s.row(i))
-                    print(model.row)
-
-            # print(data_file)
-            # print(self._get_output_filename(root))
+                    rows.append(model.row)
+            fp = open(self._get_output_filename(root), mode='w', encoding=BpNoteExcelToJson.ENCODING)
+            json.dump(rows, fp, indent=2, ensure_ascii=False)
+            fp.close()
         else:
             return
 

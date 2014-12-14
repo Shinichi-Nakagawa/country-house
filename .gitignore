@@ -58,3 +58,4 @@ target/
 
 # Country House settings
 .data/*
+*.json
