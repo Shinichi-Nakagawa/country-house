@@ -55,3 +55,7 @@ target/
 
 # PyCharm
 .idea/
+
+# Country House settings
+.data/*
+*.json
