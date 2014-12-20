@@ -3,8 +3,6 @@
 
 __author__ = 'Shinichi Nakagawa'
 
-from datetime import datetime
-
 
 class BpNote(object):
     """
