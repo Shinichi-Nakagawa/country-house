@@ -6,6 +6,7 @@ class HouseRecord(models.Model):
     code = models.TextField()
     temperature = models.FloatField()
     memo = models.CharField(max_length=255, null=True)
+    owner = models.ForeignKey('auth.User', related_name='house_recordsR')
 
     class Meta:
         db_table = 'house_record'
