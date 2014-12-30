@@ -59,3 +59,4 @@ target/
 # Country House settings
 .data/*
 *.json
+*.sqlite3
