@@ -4,7 +4,7 @@ from house import views
 
 
 urlpatterns = [
-    url(r'^records/$', views.record_list),
+    url(r'^records/$', views.RecordList.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
